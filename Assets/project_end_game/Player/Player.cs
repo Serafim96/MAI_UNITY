@@ -1,46 +1,32 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Net.Sockets;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-    public int score = 0; //очки
-    public Text score_text;//текст очков
-    public int save_point;//точка сохранения
-    [SerializeField] private float rollspeed = 3; //скорость переката
-    private bool is_moving; //состояние движения
-
-    void Start()
+    public int score = 0; //score
+    public Text score_text;//text score
+    public int save_point;//point save
+    [SerializeField] private float rollspeed = 3; //speed roll
+    public bool is_moving; //state move
+    public GameObject star;
+      void Update()
     {
 
+        if (Input.GetKeyUp(KeyCode.LeftArrow)) Assemble(Vector3.forward); //move left
+        if (Input.GetKeyUp(KeyCode.RightArrow)) Assemble(Vector3.back); //move right
+        if (Input.GetKeyUp(KeyCode.UpArrow)) Assemble(Vector3.right); //move forward
+        if (Input.GetKeyUp(KeyCode.DownArrow)) Assemble(Vector3.left); //move back
 
-    }
-
-   
-    void Update()
-    {
-
-
-        if (Input.GetKeyUp(KeyCode.LeftArrow)) Assemble(Vector3.forward); //движение влево
-        if (Input.GetKeyUp(KeyCode.RightArrow)) Assemble(Vector3.back); //движение вправо
-        if (Input.GetKeyUp(KeyCode.UpArrow)) Assemble(Vector3.right); //движение вперед
-        if (Input.GetKeyUp(KeyCode.DownArrow)) Assemble(Vector3.left); //движение назад
-
-        void Assemble(Vector3 dir) //измение положения при движении
+        void Assemble(Vector3 dir) //change position
         {
             var achor = transform.position + (Vector3.down + dir) * 0.5f;
             var axis = Vector3.Cross(Vector3.up, dir);
             StartCoroutine(Roll(achor, axis));
         }
 
-
-
         if(transform.position.y<=-3) 
         {
-            // transform.Translate(11f, 2f, 1f);
             Quaternion quaternion= Quaternion.identity;
             Vector3 ffr=Vector3.one;
             
@@ -50,7 +36,7 @@ public class Player : MonoBehaviour
     }
 
 
-    IEnumerator Roll(Vector3 anchor, Vector3 axis) //измение поворота
+    IEnumerator Roll(Vector3 anchor, Vector3 axis) //change rotation
     {
         is_moving = true;
 
@@ -66,7 +52,7 @@ public class Player : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.name == "EndGame") //событие конца игры - перемещение в начало
+        if (collision.gameObject.name == "EndGame") //end game
         {
     
             Quaternion quaternion = Quaternion.identity;
@@ -76,7 +62,7 @@ public class Player : MonoBehaviour
             transform.SetLocalPositionAndRotation(ffr, quaternion);
         }
 
-        else if (collision.gameObject.name == "Cylinder")  //телепорттация с помощью портала
+        else if (collision.gameObject.name == "Cylinder")  //teleport
         {
         
             Quaternion quaternion = Quaternion.Euler(0,0,0);
@@ -87,7 +73,7 @@ public class Player : MonoBehaviour
         }
 
 
-        else if (collision.gameObject.name == "star(Clone)") //сбор звездочек и увеличение очков
+        else if (collision.gameObject.tag == star.tag) //give stars
         {
             
             Destroy(collision.gameObject);
